@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma
+*.db
+.firebase/
+deploy_output.log
+firebase-debug.log
