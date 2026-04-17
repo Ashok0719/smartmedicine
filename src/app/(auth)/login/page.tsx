@@ -131,6 +131,18 @@ export default function LoginPage() {
           {isGoogleLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Globe className="mr-2 h-5 w-5 text-primary" />}
           Continue with Google
         </Button>
+
+        <Button 
+          variant="outline" 
+          type="button" 
+          className="w-full h-12 border-primary/20 text-primary hover:bg-primary/5 font-black uppercase tracking-widest text-[10px]" 
+          onClick={() => {
+            toast.info("Entering as Guest...");
+            router.push("/dashboard");
+          }}
+        >
+          Continue as Guest (No Login)
+        </Button>
       </CardContent>
       <CardFooter className="pb-8">
         <div className="text-sm text-center w-full text-foreground/50 font-medium">

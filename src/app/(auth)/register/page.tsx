@@ -134,6 +134,18 @@ export default function RegisterPage() {
               Access Nexus
             </Link>
           </div>
+
+          <Button 
+            variant="ghost" 
+            type="button" 
+            className="w-full h-12 text-primary/50 hover:text-primary hover:bg-primary/5 font-black uppercase tracking-widest text-[9px]" 
+            onClick={() => {
+              toast.info("Neural Override: Proceeding as Guest");
+              router.push("/dashboard");
+            }}
+          >
+            Bypass Auth (Guest Mode)
+          </Button>
         </CardFooter>
       </form>
     </Card>
