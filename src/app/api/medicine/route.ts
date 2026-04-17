@@ -7,15 +7,20 @@ import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
+  const session = await getServerSession(authOptions);
   let userId = (session?.user as any)?.id;
 
   if (!userId) {
-    const defaultUser = await prisma.user.findFirst();
-    if (defaultUser) {
-      userId = defaultUser.id;
-    } else {
-      return NextResponse.json({ error: "No users found" }, { status: 401 });
-    }
+    const defaultUser = await prisma.user.findFirst({
+      orderBy: { createdAt: 'asc' }
+    });
+    userId = defaultUser?.id;
+    console.log("GUEST_MODE_ACTIVE", { userId, userName: defaultUser?.name });
+  }
+
+  if (!userId) {
+    console.error("GET_MEDICINES_FAIL: No User Found");
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
@@ -27,6 +32,7 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
 
+    console.log(`GET_MEDICINES_SUCCESS: Found ${medicines.length} for user ${userId}`);
     return NextResponse.json(medicines);
   } catch (error: any) {
     console.error("PRISMA_GET_MEDICINES_ERROR", error);
