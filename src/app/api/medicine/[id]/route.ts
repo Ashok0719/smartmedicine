@@ -1,9 +1,9 @@
-export const runtime = 'nodejs';
 import { NextResponse } from "next/server";
-
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 
 export async function DELETE(
   req: Request,
@@ -11,8 +11,16 @@ export async function DELETE(
 ) {
   const { id } = await params;
   const session = await getServerSession(authOptions);
+  let userId = (session?.user as any)?.id;
 
-  if (!session) {
+  if (!userId) {
+    const defaultUser = await prisma.user.findFirst({
+      orderBy: { createdAt: 'asc' }
+    });
+    userId = defaultUser?.id;
+  }
+
+  if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -25,7 +33,8 @@ export async function DELETE(
       return NextResponse.json({ error: "Medicine not found" }, { status: 404 });
     }
 
-    if (medicine.userId !== (session.user as any).id) {
+    // In guest mode or normal mode, we must ensure the medicine belongs to the user
+    if (medicine.userId !== userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
